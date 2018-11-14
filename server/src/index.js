@@ -1,5 +1,8 @@
 // This is the boilerplate for the renderer server part of our app.
 const express = require("express");
+const React = require("react");
+const renderToString = require("react-dom/server").renderToString;
+const Home = require("./client/components/Home").default;
 const app = express();
 
 app.get("/", (req, res) => {});

@@ -6,9 +6,13 @@ const mapStateToProps = state => ({
   users: state.users
 });
 
+export const loadData = (store) => {
+    return store.dispatch(fetchUsers());
+};
+
 class UsersList extends Component {
   componentDidMount() {
-      this.props.fetchUsers();
+    this.props.fetchUsers();
   }
 
   renderUsers() {

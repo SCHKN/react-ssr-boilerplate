@@ -8067,6 +8067,40 @@ var fetchUsers = exports.fetchUsers = function fetchUsers() {
   }();
 };
 
+var FETCH_CURRENT_USER = exports.FETCH_CURRENT_USER = "FETCH_CURRENT_USER";
+var fetchCurrentUser = exports.fetchCurrentUser = function fetchCurrentUser() {
+  return function () {
+    var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(dispatch, getState, api) {
+      var res;
+      return regeneratorRuntime.wrap(function _callee2$(_context2) {
+        while (1) {
+          switch (_context2.prev = _context2.next) {
+            case 0:
+              _context2.next = 2;
+              return api.get("/current_user");
+
+            case 2:
+              res = _context2.sent;
+
+              dispatch({
+                type: FETCH_CURRENT_USER,
+                payload: res
+              });
+
+            case 4:
+            case "end":
+              return _context2.stop();
+          }
+        }
+      }, _callee2, undefined);
+    }));
+
+    return function (_x4, _x5, _x6) {
+      return _ref2.apply(this, arguments);
+    };
+  }();
+};
+
 /***/ }),
 /* 179 */
 /***/ (function(module, exports, __webpack_require__) {
@@ -37578,18 +37612,16 @@ var Home = function (_Component) {
     value: function render() {
       return _react2.default.createElement(
         "div",
-        null,
+        { className: "center-align", style: { marginTop: "200px" } },
         _react2.default.createElement(
-          "div",
+          "h3",
           null,
-          "Very Best Home"
+          "Welcome"
         ),
         _react2.default.createElement(
-          "button",
-          { onClick: function onClick() {
-              return console.log("Hi there!");
-            } },
-          "Press me!"
+          "p",
+          null,
+          "Check out these awesome features"
         )
       );
     }
@@ -38579,10 +38611,15 @@ var _usersReducer = __webpack_require__(473);
 
 var _usersReducer2 = _interopRequireDefault(_usersReducer);
 
+var _authReducer = __webpack_require__(482);
+
+var _authReducer2 = _interopRequireDefault(_authReducer);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = (0, _redux.combineReducers)({
-  users: _usersReducer2.default
+  users: _usersReducer2.default,
+  auth: _authReducer2.default
 });
 
 /***/ }),
@@ -39109,6 +39146,12 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRouterConfig = __webpack_require__(474);
 
+var _Header = __webpack_require__(481);
+
+var _Header2 = _interopRequireDefault(_Header);
+
+var _index = __webpack_require__(178);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -39134,6 +39177,7 @@ var App = function (_Component) {
       return _react2.default.createElement(
         "div",
         null,
+        _react2.default.createElement(_Header2.default, null),
         (0, _reactRouterConfig.renderRoutes)(route.routes)
       );
     }
@@ -39142,7 +39186,124 @@ var App = function (_Component) {
   return App;
 }(_react.Component);
 
-exports.default = { component: App };
+exports.default = {
+  component: App,
+  loadData: function loadData(_ref) {
+    var dispatch = _ref.dispatch;
+    return dispatch((0, _index.fetchCurrentUser)());
+  }
+};
+
+/***/ }),
+/* 481 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _react = __webpack_require__(6);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRouterDom = __webpack_require__(402);
+
+var _reactRedux = __webpack_require__(173);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var Header = function Header(_ref) {
+  var auth = _ref.auth;
+
+  console.log(auth);
+
+  var authButton = auth ? _react2.default.createElement(
+    "a",
+    { href: "/api/logout" },
+    "Logout"
+  ) : _react2.default.createElement(
+    "a",
+    { href: "/api/auth/google" },
+    "Login"
+  );
+
+  return _react2.default.createElement(
+    "nav",
+    null,
+    _react2.default.createElement(
+      "div",
+      { className: "nav-wrapper" },
+      _react2.default.createElement(
+        _reactRouterDom.Link,
+        { to: "/", className: "brand-logo" },
+        "React SSR"
+      ),
+      _react2.default.createElement(
+        "ul",
+        { className: "right" },
+        _react2.default.createElement(
+          "li",
+          null,
+          _react2.default.createElement(
+            _reactRouterDom.Link,
+            { to: "/users" },
+            "Users"
+          )
+        ),
+        _react2.default.createElement(
+          "li",
+          null,
+          _react2.default.createElement(
+            _reactRouterDom.Link,
+            { to: "/admins" },
+            "Admins"
+          )
+        ),
+        _react2.default.createElement(
+          "li",
+          null,
+          authButton
+        )
+      )
+    )
+  );
+};
+
+function mapStateToProps(_ref2) {
+  var auth = _ref2.auth;
+
+  return { auth: auth };
+}
+
+exports.default = (0, _reactRedux.connect)(mapStateToProps)(Header);
+
+/***/ }),
+/* 482 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+exports.default = function () {
+  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+  var action = arguments[1];
+
+  switch (action.type) {
+    case _index.FETCH_CURRENT_USER:
+      return action.payload.data || false;
+    default:
+      return state;
+  }
+};
+
+var _index = __webpack_require__(178);
 
 /***/ })
 /******/ ]);

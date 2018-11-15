@@ -100,6 +100,10 @@ var _App = __webpack_require__(21);
 
 var _App2 = _interopRequireDefault(_App);
 
+var _NotFoundPage = __webpack_require__(24);
+
+var _NotFoundPage2 = _interopRequireDefault(_NotFoundPage);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = [_extends({}, _App2.default, {
@@ -108,7 +112,7 @@ exports.default = [_extends({}, _App2.default, {
     exact: true
   }), _extends({
     path: "/users"
-  }, _UsersListPage2.default)]
+  }, _UsersListPage2.default), _extends({}, _NotFoundPage2.default)]
 })];
 
 /***/ }),
@@ -248,7 +252,6 @@ app.use("/api", (0, _expressHttpProxy2.default)("http://react-ssr-api.herokuapp.
 }));
 app.use(_express2.default.static("public"));
 app.get("*", function (req, res) {
-
   var store = (0, _createStore2.default)(req);
 
   var promises = (0, _reactRouterConfig.matchRoutes)(_routes2.default, req.path).map(function (_ref) {
@@ -258,7 +261,14 @@ app.get("*", function (req, res) {
   });
 
   Promise.all(promises).then(function () {
-    res.send((0, _renderer2.default)(req, store));
+    var context = {};
+    var content = (0, _renderer2.default)(req, store, context);
+
+    if (context.notFound) {
+      res.status(404);
+    }
+
+    res.send(content);
   });
 });
 
@@ -464,13 +474,13 @@ var _serializeJavascript2 = _interopRequireDefault(_serializeJavascript);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.default = function (req, store) {
+exports.default = function (req, store, context) {
   var content = (0, _server.renderToString)(_react2.default.createElement(
     _reactRedux.Provider,
     { store: store },
     _react2.default.createElement(
       _reactRouterDom.StaticRouter,
-      { location: req.path, context: {} },
+      { location: req.path, context: context },
       _react2.default.createElement(
         "div",
         null,
@@ -778,6 +788,37 @@ exports.default = function () {
 };
 
 var _index = __webpack_require__(4);
+
+/***/ }),
+/* 24 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var NotFoundPage = function NotFoundPage(_ref) {
+  var _ref$staticContext = _ref.staticContext,
+      staticContext = _ref$staticContext === undefined ? {} : _ref$staticContext;
+
+  staticContext.notFound = true;
+  return _react2.default.createElement(
+    "h1",
+    null,
+    "Oops, route not found"
+  );
+};
+
+exports.default = { component: NotFoundPage };
 
 /***/ })
 /******/ ]);

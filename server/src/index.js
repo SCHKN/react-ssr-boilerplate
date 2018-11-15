@@ -20,7 +20,6 @@ app.use(
 );
 app.use(express.static("public"));
 app.get("*", (req, res) => {
-
   const store = createStore(req);
 
   const promises = matchRoutes(Routes, req.path).map(({ route }) => {
@@ -28,7 +27,14 @@ app.get("*", (req, res) => {
   });
 
   Promise.all(promises).then(() => {
-    res.send(renderer(req, store));
+    const context = {};
+    const content = renderer(req, store, context);
+
+    if (context.notFound) {
+      res.status(404);
+    }
+
+    res.send(content);
   });
 });
 
